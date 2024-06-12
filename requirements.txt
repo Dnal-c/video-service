@@ -1,0 +1,10 @@
+fastapi
+elasticsearch
+paprika
+openai
+pandas
+translate
+transformers
+torch
+torchvision
+ray

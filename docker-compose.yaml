@@ -1,0 +1,9 @@
+services:
+  app:
+    image: app
+    ports:
+      - 4200:4200
+    environment:
+      - ELASTIC_HOST=http://87.242.93.110:9200
+      - ELASTIC_LOGIN=elastic
+      - ELASTIC_PASSWORD=T86zNAvyHwbAr4S
