@@ -1,8 +1,8 @@
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi import Request
-from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 
 from src.logic.elastic import ElasticService
@@ -61,14 +61,23 @@ def get_video_search(query: str, api: Request):
     res = elastic_service.search_by_text_with_voice(query)
     return res
 
+
 @app.get("/videos/composite")
 def get_video_search(query: str, api: Request):
     elastic_service: ElasticService = api.app.state.es
     res = elastic_service.search_by_text_composite(query)
     return res
 
+
 @app.post("/videos/settings")
 def video_search(settings: SearchSettings, api: Request):
     elastic_service: ElasticService = api.app.state.es
     res = elastic_service.set_settings(settings)
+    return res
+
+
+@app.get("/videos/suggest")
+def get_video_search(query: str, api: Request):
+    elastic_service: ElasticService = api.app.state.es
+    res = elastic_service.suggest(query)
     return res

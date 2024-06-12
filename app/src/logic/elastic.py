@@ -102,3 +102,25 @@ class ElasticService:
 
     def set_settings(self, settings: SearchSettings):
         self.search_settings = settings
+
+    def suggest(self, text: str):
+        suggest_query = {
+            "suggest": {
+                "my-suggestion": {
+                    "prefix": text,
+                    "completion": {
+                        "field": "summary.sug",
+                        "size": 10,
+                        "skip_duplicates": 'true',
+                        "fuzzy": {
+                            "fuzziness": "AUTO"
+                        }
+                    }
+                }
+            },
+            "_source": 'false'
+        }
+        response = self.es.search(index='video-index-4', body=suggest_query)
+        print(response)
+        items = list(map(lambda item: item['text'], response['suggest']['my-suggestion'][0]['options']))
+        return items
