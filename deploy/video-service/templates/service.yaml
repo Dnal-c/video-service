@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "video-service.fullname" . }}
+  labels:
+    {{- include "video-service.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range $port := .Values.service.ports }}
+    - port: {{ $port.value }}
+      targetPort: {{ $port.value }}
+      {{ if contains "NodePort" $.Values.service.type }}
+      nodePort: {{ $port.nodePort}}
+      {{ end }}
+      name: {{ $port.name }}
+    {{- end }}
+  selector:
+    {{- include "video-service.selectorLabels" . | nindent 4 }}

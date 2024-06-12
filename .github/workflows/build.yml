@@ -1,0 +1,55 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: build and deploy
+
+on:
+  push:
+    branches: [ "master"]
+
+env:
+  DOCKER_REGISTRY_REPO: "${{ vars.DOCKER_HUB_REPO }}"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      sha_short: ${{ steps.vars.outputs.sha_short }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_LOGIN }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ${{ env.DOCKER_REGISTRY_REPO }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.sha_short }}
+        
+  deployment:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Helm Deploy
+        uses: vimeda/helm@v1.7.0
+        with:
+          release: ${{ github.event.repository.name }}
+          namespace: 'default'
+          chart: 'deploy/video-service'
+          values: |
+            image:
+              repository: ${{ env.DOCKER_REGISTRY_REPO }}/${{ github.event.repository.name }}
+              pullPolicy: Always
+              # Overrides the image tag whose default is the chart appVersion.
+              tag: "${{ needs.build.outputs.sha_short }}"
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
