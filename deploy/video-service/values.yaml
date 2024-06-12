@@ -48,10 +48,11 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
+  type: NodePort
   ports:
     - name: fast-api
       value: 4200
+      nodePort: 30042
 
 ingress:
   enabled: false
