@@ -8,6 +8,20 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+env:
+  - name: ELASTIC_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: elastic
+        key: password
+  - name: ELASTIC_LOGIN
+    valueFrom:
+      secretKeyRef:
+        name: elastic
+        key: login
+  - name: ELASTIC_HOST
+    value: "http://87.242.93.110:9200"
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
