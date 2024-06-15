@@ -48,7 +48,7 @@ class ElasticService:
                 }
             ],
             '_source': {
-                'includes': ['link', 'description_ru', 'tags'],
+                'includes': ['link', 'description_ru', 'tags', 'summary'],
             }
         }
         response = self.es.search(index=self.index, body=multi_query)
