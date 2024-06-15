@@ -3,7 +3,7 @@ import os
 from elasticsearch import Elasticsearch
 
 from app.src.logic.embed import EmbeddingService
-from app.src.model.models import SearchRequest, SearchSettings
+from app.src.model.models import SearchSettings
 
 
 class ElasticService:
@@ -22,51 +22,6 @@ class ElasticService:
         self.es = Elasticsearch(host, basic_auth=(login, password))
         self.index = 'video-index'
         self.embed_service = embed_srv
-
-    def search(self, search_request: SearchRequest):
-        return self.search_by_text(search_request.text)
-
-    def search_by_text(self, text):
-        query = {
-            'knn': {
-                'field': 'description_ru_vector',
-                'query_vector': self.embed_service.calc(text),
-            },
-            '_source': {
-                'includes': ['link', 'description_ru'],
-            }
-        }
-        response = self.es.search(index=self.index, body=query)
-        items = response['hits']['hits']
-        return list(map(lambda item: item['_source'], items))
-
-    def search_by_text_mock(self, text):
-        query = {
-            'knn': {
-                'field': 'description_ru_vector',
-                'query_vector': self.embed_service.calc(text),
-            },
-            '_source': {
-                'includes': ['link', 'description_ru'],
-            }
-        }
-        response = self.es.search(index='video-index-mock', body=query)
-        items = response['hits']['hits']
-        return list(map(lambda item: item['_source'], items))
-
-    def search_by_text_with_voice(self, text):
-        query = {
-            'knn': {
-                'field': 'desc_with_voice_vector',
-                'query_vector': self.embed_service.calc(text),
-            },
-            '_source': {
-                'includes': ['link', 'description_ru'],
-            }
-        }
-        response = self.es.search(index='video-index-2', body=query)
-        items = response['hits']['hits']
-        return list(map(lambda item: item['_source'], items))
 
     def search_by_text_composite(self, text):
         text_vector = self.embed_service.calc(text)
@@ -93,10 +48,10 @@ class ElasticService:
                 }
             ],
             '_source': {
-                'includes': ['link', 'description_ru'],
+                'includes': ['link', 'description_ru', 'tags'],
             }
         }
-        response = self.es.search(index='video-index-3', body=multi_query)
+        response = self.es.search(index=self.index, body=multi_query)
         items = response['hits']['hits']
         return list(map(lambda item: item['_source'], items))
 
@@ -120,7 +75,7 @@ class ElasticService:
             },
             "_source": 'false'
         }
-        response = self.es.search(index='video-index-4', body=suggest_query)
+        response = self.es.search(index=self.index, body=suggest_query)
         print(response)
         items = list(map(lambda item: item['text'], response['suggest']['my-suggestion'][0]['options']))
         return items

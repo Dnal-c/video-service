@@ -7,7 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.logic.elastic import ElasticService
 from src.logic.embed import EmbeddingService
-from src.model.models import SearchRequest, SearchSettings
+from src.model.models import SearchSettings
 
 load_dotenv()
 
@@ -31,45 +31,25 @@ app.add_middleware(
 )
 
 
-@app.post("/videos:search")
-def video_search(request: SearchRequest, api: Request):
+@app.get("/search")
+def video_search(text: str, api: Request):
     elastic_service: ElasticService = api.app.state.es
-    res = elastic_service.search(request)
-    return res
+    videos = elastic_service.search_by_text_composite(text)
+
+    def map_to_response_item(video):
+        resp_item = {
+            'link': video['link']
+        }
+
+        if 'tags' in video:
+            resp_item['description'] = video['tags']
+        return resp_item
+
+    response = list(map(map_to_response_item, videos))
+    return response
 
 
-@app.get("/videos")
-def get_video_search(query: str, api: Request):
-    # elastic_service: ElasticService = api.app.state.es
-    # res = elastic_service.search_by_text(query)
-    # return res
-    elastic_service: ElasticService = api.app.state.es
-    res = elastic_service.search_by_text_composite(query)
-    return res
-
-
-@app.get("/videos/mock")
-def get_video_search(query: str, api: Request):
-    elastic_service: ElasticService = api.app.state.es
-    res = elastic_service.search_by_text_mock(query)
-    return res
-
-
-@app.get("/videos/with_voice")
-def get_video_search(query: str, api: Request):
-    elastic_service: ElasticService = api.app.state.es
-    res = elastic_service.search_by_text_with_voice(query)
-    return res
-
-
-@app.get("/videos/composite")
-def get_video_search(query: str, api: Request):
-    elastic_service: ElasticService = api.app.state.es
-    res = elastic_service.search_by_text_composite(query)
-    return res
-
-
-@app.post("/videos/settings")
+@app.put("/videos/settings")
 def video_search(settings: SearchSettings, api: Request):
     elastic_service: ElasticService = api.app.state.es
     res = elastic_service.set_settings(settings)
