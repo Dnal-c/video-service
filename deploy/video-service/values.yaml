@@ -22,11 +22,11 @@ env:
   - name: ELASTIC_HOST
     value: "http://87.242.93.110:9200"
   - name: DESCRIPTION_RU_BOOST
-    value: 1
+    value: "1"
   - name: VOICE_BOOST
-    value: 0.35
+    value: "0.35"
   - name: TAGS_BOOST
-    value: 0.85
+    value: "0.85"
 
 serviceAccount:
   # Specifies whether a service account should be created
