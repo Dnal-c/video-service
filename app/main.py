@@ -43,6 +43,9 @@ def video_search(text: str, api: Request):
 
         if 'tags' in video:
             resp_item['description'] = video['tags']
+        if 'summary' in video:
+            resp_item['short_description'] = video['summary']
+
         return resp_item
 
     response = list(map(map_to_response_item, videos))
