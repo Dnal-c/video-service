@@ -66,11 +66,11 @@ def video_search(text: str, api: Request) -> List[VideoItem]:
     return response
 
 
-@app.put("/videos/settings", tags=['Настройка'])
-def put_search_settings(settings: SearchSettings, api: Request) -> None:
-    elastic_service: ElasticService = api.app.state.es
-    res = elastic_service.set_settings(settings)
-    return res
+# @app.put("/videos/settings", tags=['Настройка'])
+# def put_search_settings(settings: SearchSettings, api: Request) -> None:
+#     elastic_service: ElasticService = api.app.state.es
+#     res = elastic_service.set_settings(settings)
+#     return res
 
 
 @app.get("/videos/suggest", tags=['Предложения'])

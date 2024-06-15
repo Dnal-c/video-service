@@ -10,9 +10,9 @@ class ElasticService:
 
     def __init__(self, embed_srv: EmbeddingService):
         settings = {
-            'description_ru_boost': 1,
-            'voice_boost': 1,
-            'tags_boost': 1
+            'description_ru_boost': os.environ['DESCRIPTION_RU_BOOST'],
+            'voice_boost': os.environ['VOICE_BOOST'],
+            'tags_boost': os.environ['TAGS_BOOST']
         }
         self.search_settings = SearchSettings(**settings)
         host = os.environ['ELASTIC_HOST']
