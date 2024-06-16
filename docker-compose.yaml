@@ -4,6 +4,6 @@ services:
     ports:
       - 4200:4200
     environment:
-      - ELASTIC_HOST=http://87.242.93.110:9200
+      - ELASTIC_HOST=http://elastic:9200
       - ELASTIC_LOGIN=elastic
-      - ELASTIC_PASSWORD=T86zNAvyHwbAr4S
+      - ELASTIC_PASSWORD=pass
